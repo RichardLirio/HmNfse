@@ -1,0 +1,7 @@
+C:\Users\angel\source\repos\HmNfse\HmNfse\bin\Release\HmNfse.dll.config
+C:\Users\angel\source\repos\HmNfse\HmNfse\bin\Release\HmNfse.dll
+C:\Users\angel\source\repos\HmNfse\HmNfse\bin\Release\HmNfse.pdb
+C:\Users\angel\source\repos\HmNfse\HmNfse\obj\Release\HmNfse.csproj.AssemblyReference.cache
+C:\Users\angel\source\repos\HmNfse\HmNfse\obj\Release\HmNfse.csproj.CoreCompileInputs.cache
+C:\Users\angel\source\repos\HmNfse\HmNfse\obj\Release\HmNfse.dll
+C:\Users\angel\source\repos\HmNfse\HmNfse\obj\Release\HmNfse.pdb

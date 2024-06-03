@@ -298,7 +298,7 @@ namespace HmNfse
             declara.Id = "Id_" + Guid.NewGuid().ToString("N");//id do rps precisa ter letra e numero
             declara.Rps = InfRps;
             declara.Competencia = Convert.ToDateTime(txt[23]);//competencia na nfse
-            declara.Tomador = tomador;
+            declara.TomadorServico = tomador;
             declara.Prestador = pessoaEmpresaPre;
             declara.Servico = servico;
 

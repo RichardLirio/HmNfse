@@ -1672,7 +1672,7 @@ namespace SchemaXmlAbrasf
 
         private tcIdentificacaoPessoaEmpresa prestadorField;
 
-        private tcDadosTomador tomadorField;
+    	private tcDadosTomador tomadorServicoField;
 
         private tcDadosIntermediario intermediarioField;
 
@@ -1748,15 +1748,15 @@ namespace SchemaXmlAbrasf
         }
 
         /// <remarks/>
-        public tcDadosTomador Tomador
+        public tcDadosTomador TomadorServico
         {
             get
             {
-                return this.tomadorField;
+                return this.tomadorServicoField;
             }
             set
             {
-                this.tomadorField = value;
+                this.tomadorServicoField = value;
             }
         }
 

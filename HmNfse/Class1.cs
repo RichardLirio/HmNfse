@@ -413,7 +413,16 @@ namespace HmNfse
         {
             try
             {
+                // Carregar o certificado
+                var cert = new X509Certificate2(sdircert, senhacert);
 
+                // Verifica o vencimento do certificado
+                var date = DateTime.Now;
+                var VencCert = cert.NotAfter.Date;
+                if (date > VencCert)
+                {
+                    return new string[] { "Certificado Digital Vencido. Favor Verificar.", "erro" };
+                }
 
                 if (codmun == "3205309")// Prefeitura de Vitoria
                 {
@@ -449,6 +458,16 @@ namespace HmNfse
         {
             try
             {
+                // Carregar o certificado
+                var cert = new X509Certificate2(sdircert, senhacert);
+
+                // Verifica o vencimento do certificado
+                var date = DateTime.Now;
+                var VencCert = cert.NotAfter.Date;
+                if (date > VencCert)
+                {
+                    return new string[] { "erro", "Certificado Digital Vencido. Favor Verificar." };
+                }
 
 
                 if (codmun == "3205309")// Prefeitura de Vitoria
@@ -478,6 +497,17 @@ namespace HmNfse
 
             try
             {
+                // Carregar o certificado
+                var cert = new X509Certificate2(sdircert, senhacert);
+
+                // Verifica o vencimento do certificado
+                var date = DateTime.Now;
+                var VencCert = cert.NotAfter.Date;
+                if (date > VencCert)
+                {
+                    return new string[] {"Certificado Digital Vencido. Favor Verificar.", "erro" };
+                }
+
                 // Serialização dos objetos para XML
                 var cabecalho = montaCabec();
                 var dadosConsultaNfse = montaDadosConsultaNfse(infosNfse);
@@ -685,7 +715,7 @@ namespace HmNfse
                 var VencCert = cert.NotAfter.Date;
                 if (date > VencCert)
                 {
-                    return new string[] { "erro", "Certificado Digital Vencido. Favor Verificar." };
+                    return new string[] { "Certificado Digital Vencido. Favor Verificar.", "erro"};
                 }
 
                 // Configuração da comunicação com o serviço
@@ -730,7 +760,7 @@ namespace HmNfse
             }
             catch (Exception ex)
             {
-                return new string[] { "erro", ex.ToString() };
+                return new string[] { ex.ToString(), "erro" };
 
             };
 

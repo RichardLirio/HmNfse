@@ -402,7 +402,7 @@ namespace HmNfse
 
 
 
-        // testar acrescenter o modelo de xml da pmv
+        
 
 
 
@@ -679,6 +679,14 @@ namespace HmNfse
 
                 // Carregar o certificado
                 var cert = new X509Certificate2(certificadoPath, certificadoSenha);
+
+                // Verifica o vencimento do certificado
+                var date = DateTime.Now;
+                var VencCert = cert.NotAfter.Date;
+                if (date > VencCert)
+                {
+                    return new string[] { "erro", "Certificado Digital Vencido. Favor Verificar." };
+                }
 
                 // Configuração da comunicação com o serviço
                 var binding = ServicePmv.bindPMV();

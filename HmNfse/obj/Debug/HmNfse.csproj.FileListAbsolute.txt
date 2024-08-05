@@ -6,3 +6,11 @@ C:\Users\angel\source\repos\HmNfse\HmNfse\obj\Debug\HmNfse.csproj.CoreCompileInp
 C:\Users\angel\source\repos\HmNfse\HmNfse\obj\Debug\HmNfse.dll
 C:\Users\angel\source\repos\HmNfse\HmNfse\obj\Debug\HmNfse.pdb
 C:\Users\angel\source\repos\HmNfse\HmNfse\bin\Debug\HmNfse.tlb
+C:\Users\richa\source\repos\HmNfse\HmNfse\bin\Debug\HmNfse.dll.config
+C:\Users\richa\source\repos\HmNfse\HmNfse\bin\Debug\HmNfse.dll
+C:\Users\richa\source\repos\HmNfse\HmNfse\bin\Debug\HmNfse.pdb
+C:\Users\richa\source\repos\HmNfse\HmNfse\bin\Debug\HmNfse.tlb
+C:\Users\richa\source\repos\HmNfse\HmNfse\obj\Debug\HmNfse.csproj.AssemblyReference.cache
+C:\Users\richa\source\repos\HmNfse\HmNfse\obj\Debug\HmNfse.csproj.CoreCompileInputs.cache
+C:\Users\richa\source\repos\HmNfse\HmNfse\obj\Debug\HmNfse.dll
+C:\Users\richa\source\repos\HmNfse\HmNfse\obj\Debug\HmNfse.pdb

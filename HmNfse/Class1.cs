@@ -21,6 +21,7 @@ using NotafiscalService;
 using SchemaXmlAbrasf;
 using Service;
 using System.Security.Policy;
+using WebServiceBarraSF;
 
 namespace HmNfse
 {
@@ -37,6 +38,17 @@ namespace HmNfse
         string[] CancelamentoNfse(string sdircert, string senhacert, string infosNfse, string sdirxml, string url, string codmun);
 
         string[] ConsultarNfse(string infosNfse, string url, string sdircert, string senhacert, string codmun);
+
+        string[] requestAutenticarContribuinte(string certificadoPath, string certificadoSenha, string url, string cnpj, string wbssen);
+
+        dynamic requestEnviarLoteRps(string certificadoPath, string certificadoSenha, string url, string sxml, string cnpj, string sAutenticacao);
+
+        dynamic requestConsultaLoteRpsEnvio(string certificadoPath, string certificadoSenha, string url, string cnpj, string protocolo);
+
+        dynamic requestFinalizaSessao(string certificadoPath, string certificadoSenha, string url, string sAutenticacao);
+
+        dynamic requestCancelarNotaMotivo(string certificadoPath, string certificadoSenha, string url, string cnpj, string wbssen, string nfse, string smotivo);
+
 
         string[] Array();
 
@@ -399,7 +411,7 @@ namespace HmNfse
         {
             try
             {
-                
+
 
                 if (codmun == "3205309")// Prefeitura de Vitoria
                 {
@@ -411,7 +423,7 @@ namespace HmNfse
                     //requisição PMV
                     return ServicePmv.resquestGerarNfsePMV(notaFiscalAssinada, url, sdirxml, sdircert, senhacert, dadosXML);
                 }
-                else
+                else 
                 {
                     // Organizar os dados do XML em uma classe
                     var notaFiscal = ExtrairDadosNota(dadosXML);
@@ -481,17 +493,20 @@ namespace HmNfse
 
                     return requisicaoAbrasf;
                 }
-               
+
             }
             catch(Exception ex)
             {
-                return new string[] { ex.ToString(), "CATCH" }; 
+                return new string[] { ex.ToString(), "CATCH" };
             }
-        
-        
+
+
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 
 
 
@@ -807,9 +822,258 @@ namespace HmNfse
                 return new string[] { "ERR", ex.ToString() };
             }
         }
- 
+
         /////////////////////////////////////////////////////////////////////////////////////////////
 
+
+
+
+
+
+
+
+
+
+
+        // REQUISIÇÕES  E&L ///////////////////////////////////////////////////////////////////////////
+
+
+        // Requisições para o webService da EL(Barra de São fransisco e Colatina)
+        public string[] requestAutenticarContribuinte(string certificadoPath, string certificadoSenha, string url, string cnpj, string wbssen)
+        {
+            try
+            {
+                // Carregar o certificado
+                var cert = new X509Certificate2(certificadoPath, certificadoSenha);
+
+                // Configuração da comunicação com o serviço
+                var binding = ServicePmv.bindPMV();
+                var endpoint = new EndpointAddress(url);
+
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;//PROTOCOLO DE SEGURANÇA
+
+                // Criação do cliente do serviço
+                using (var client = new RpsServiceClient(binding, endpoint))
+                {
+
+                    client.ClientCredentials.ClientCertificate.Certificate = cert;
+
+                    // Realiza a consulta
+                    var response = client.autenticarContribuinteAsync(cnpj, wbssen);
+
+
+                    // Captura o retorno da chamada
+                    var resultado = response.Result.@return.ToString();
+
+
+
+                    return new string[] { resultado };
+
+                }
+            }
+            catch (Exception ex)
+            {
+                return new string[] { "erro" , ex.ToString() };
+
+            };
+        }
+
+        public dynamic requestEnviarLoteRps(string certificadoPath, string certificadoSenha, string url, string sxml, string cnpj, string sAutenticacao)
+        {
+            try
+            {
+                // Carregar o certificado
+                var cert = new X509Certificate2(certificadoPath, certificadoSenha);
+
+                // Configuração da comunicação com o serviço
+                var binding = ServicePmv.bindPMV();
+                var endpoint = new EndpointAddress(url);
+
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;//PROTOCOLO DE SEGURANÇA
+
+
+
+                // Criação do cliente do serviço
+                using (var client = new RpsServiceClient(binding, endpoint))
+                {
+                    //Assina a requisição com o certificado
+                    client.ClientCredentials.ClientCertificate.Certificate = cert;
+
+                    // Realiza o envio
+                    var response = client.EnviarLoteRpsEnvioAsync(cnpj, sAutenticacao, sxml);
+
+                    //// Captura o retorno da chamada
+                    var resultado = response.Result.@return;
+
+                    var sresultado = ClasseParaXmlString(resultado);
+                    XmlDocument xmlResponse = new XmlDocument();
+                    xmlResponse.LoadXml(sresultado);
+                    xmlResponse.Save("c:/temp/RetornoLoteRps.xml");
+
+                    return new string[] { resultado.numeroProtocolo.ToString() , resultado.numeroLote.ToString() };
+
+                }
+            }
+            catch (Exception ex)
+            {
+                return new string[] { "erro", ex.ToString() };
+
+            };
+
+        }
+
+        public dynamic requestConsultaLoteRpsEnvio(string certificadoPath, string certificadoSenha, string url, string cnpj, string protocolo)
+        {
+            try
+            {
+                // Carregar o certificado
+                var cert = new X509Certificate2(certificadoPath, certificadoSenha);
+
+                // Configuração da comunicação com o serviço
+                var binding = ServicePmv.bindPMV();
+                var endpoint = new EndpointAddress(url);
+
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;//PROTOCOLO DE SEGURANÇA
+
+
+
+                // Criação do cliente do serviço
+                using (var client = new RpsServiceClient(binding, endpoint))
+                {
+
+                    client.ClientCredentials.ClientCertificate.Certificate = cert;
+
+                    // Realiza a consulta
+                    var response = client.ConsultarLoteRpsEnvioAsync(cnpj, protocolo);
+
+                    
+                    // Captura o retorno da chamada
+                    var resultado = response.Result.@return;
+
+                   
+
+                    if (resultado.mensagens is null)
+                    {
+                        var sresultado = ClasseParaXmlString(resultado);
+                        XmlDocument xmlResponse = new XmlDocument();
+                        xmlResponse.LoadXml(sresultado);
+                        xmlResponse.Save("c:/temp/RetornoConsultaLoteRps.xml");
+
+                        return new string[] { resultado.notasFiscais[0].idRps.ToString() };
+                    }
+                    else
+                    {
+                        return resultado.mensagens;
+                        
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                return new string[] { "erro", ex.ToString() };
+
+            };
+
+        }
+
+        public dynamic requestCancelarNotaMotivo(string certificadoPath, string certificadoSenha, string url, string cnpj, string wbssen, string nfse, string smotivo)
+        {
+            try
+            {
+                // Carregar o certificado
+                var cert = new X509Certificate2(certificadoPath, certificadoSenha);
+
+                // Configuração da comunicação com o serviço
+                var binding = ServicePmv.bindPMV();
+                var endpoint = new EndpointAddress(url);
+
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;//PROTOCOLO DE SEGURANÇA
+
+
+
+                // Criação do cliente do serviço
+                using (var client = new RpsServiceClient(binding, endpoint))
+                {
+
+                    client.ClientCredentials.ClientCertificate.Certificate = cert;
+
+                    // Realiza o Cancelamento
+                    var response = client.CancelarNfseMotivoEnvioAsync(cnpj, wbssen, nfse, smotivo);
+
+
+                    // Captura o retorno da chamada
+                    var resultado = response.Result.@return;
+
+                    if (resultado.mensagens is null)
+                    {
+                        var sresultado = ClasseParaXmlString(resultado.nfeRpsNotaFiscal);
+                        XmlDocument xmlResponse = new XmlDocument();
+                        xmlResponse.LoadXml(sresultado);
+                        xmlResponse.Save("c:/temp/RetornoCancelamentoRps.xml");
+
+                        return new string[] { resultado.nfeRpsNotaFiscal.situacao.ToString() };
+                    }
+                    else
+                    {
+                        return resultado.mensagens;
+
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return ex.Message.ToString();
+
+            };
+
+        }
+
+        public dynamic requestFinalizaSessao(string certificadoPath, string certificadoSenha, string url, string sAutenticacao)
+        {
+            try
+            {
+                // Carregar o certificado
+                var cert = new X509Certificate2(certificadoPath, certificadoSenha);
+
+                // Configuração da comunicação com o serviço
+                var binding = ServicePmv.bindPMV();
+                var endpoint = new EndpointAddress(url);
+
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;//PROTOCOLO DE SEGURANÇA
+
+
+
+                // Criação do cliente do serviço
+                using (var client = new RpsServiceClient(binding, endpoint))
+                {
+
+                    client.ClientCredentials.ClientCertificate.Certificate = cert;
+
+                    // Realiza a consulta
+                    var response = client.finalizarSessaoAsync(sAutenticacao);
+
+
+                    // Captura o retorno da chamada
+                    var resultado = response.Result.ToString();
+
+
+                    return resultado;
+
+                }
+            }
+            catch (Exception ex)
+            {
+                return ex.Message.ToString();
+
+            };
+
+        }
+
+        
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////////
 
 
 

@@ -95,7 +95,7 @@ namespace Service
             servico.MunicipioIncidencia = Convert.ToInt32(txt[7]);//codigo municipio
             servico.MunicipioIncidenciaSpecified = true;
             if (txt[9] == "13.04") { servico.CodigoCnae = Convert.ToInt32("8219901"); } else { servico.CodigoCnae = Convert.ToInt32(txt[9]); }
-            
+
             servico.CodigoCnaeSpecified = true;
 
 
@@ -434,7 +434,7 @@ namespace Service
         // Cancela Nfse
         public static string[] CancelamentoNfsePmv(string sdircert, string senhacert, string infosNfse, string sdirxml, string url)
         {
-            
+
 
             try
             {
@@ -594,7 +594,7 @@ namespace Service
 
             string sCancelarNfse = Hm_Nfse.ClasseParaXmlString(cancelarNfse);
 
-            
+
 
             return sCancelarNfse;
         }

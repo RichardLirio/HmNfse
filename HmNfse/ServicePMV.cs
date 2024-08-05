@@ -9,6 +9,7 @@ using HmNfse;
 using System;
 using System.Linq;
 using System.Net;
+using Microsoft.SqlServer.Server;
 
 namespace Service
 {

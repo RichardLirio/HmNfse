@@ -27,6 +27,7 @@ namespace HmNfse
 {
     [InterfaceType(ComInterfaceType.InterfaceIsDual),
   Guid("66EFA8BE-A461-4DD0-84E2-035D87DE07C5")]
+    //Versão 1.33 - > Inclusão das prefeituras e Colatina e Barra de São Fransisco.
     //Versão 1.23 - > Inclusão da prefeitura de Vitoria.
     //Versão 1.13 - > Inclusão da varivavel com o endereço do endpoint de requisição. Aracruz e São gabriel da palha
     //Versão 1.03 - > Correção caso o tomador do serviço não possua email
@@ -49,6 +50,7 @@ namespace HmNfse
 
         dynamic requestCancelarNotaMotivo(string certificadoPath, string certificadoSenha, string url, string cnpj, string wbssen, string nfse, string smotivo);
 
+        string[] resquestLoteRpsPMV(string certificadoPath, string certificadoSenha, string notaFiscal, string url);
 
         string[] Array();
 
@@ -665,6 +667,67 @@ namespace HmNfse
             }
             return new string[] { "Erro ao tratar o retorno da chamada.", "Erro" };
         }
+
+        // Requisição para autorização de NFS em lote para a PMV
+        public string[] resquestLoteRpsPMV(string certificadoPath, string certificadoSenha, string notaFiscal, string url)
+        {
+            try
+            {
+
+                var xmlNfse = new RecepcionarLoteRpsRequestBody();
+                xmlNfse.mensagemXML = notaFiscal;
+
+                // Carregar o certificado
+                var cert = new X509Certificate2(certificadoPath, certificadoSenha);
+
+                // Configuração da comunicação com o serviço
+                var binding = ServicePmv.bindPMV();
+                var endpoint = new EndpointAddress(url);
+
+                using (var client = new NotaFiscalServiceSoapClient(binding, endpoint))
+                {
+                    client.ClientCredentials.ClientCertificate.Certificate = cert;
+
+                    // Salva xml da requisição para o caso de suporte
+                    XmlDocument xmlDocument = new XmlDocument();
+                    xmlDocument.LoadXml(notaFiscal);
+                    xmlDocument.Save("c:/temp/nfseRequestlote.xml");
+                    xmlDocument.PreserveWhitespace = true;
+
+
+                    // Realiza o envio da nota fiscal
+                    var response = client.RecepcionarLoteRpsAsync(notaFiscal);
+
+                    var resultado = XmlStringParaClasse<EnviarLoteRpsResposta>(response.Result.Body.RecepcionarLoteRpsResult);
+                    //resultado.itens[1].menssagemretorno[0].mensagem
+
+                    // Salva xml da retorno para o caso de suporte
+                    XmlDocument xmlresponse = new XmlDocument();
+                    xmlDocument.LoadXml(response.Result.Body.RecepcionarLoteRpsResult);
+                    xmlDocument.Save("c:/temp/nfseResponselote.xml");
+                    xmlDocument.PreserveWhitespace = true;
+
+                    // Tratamento do retorno
+                    ListaMensagemRetorno ListaMensagem = (ListaMensagemRetorno)resultado.Items[1];
+
+                    var cod = ListaMensagem.MensagemRetorno[0].Codigo.ToString();
+                    var menssagem = ListaMensagem.MensagemRetorno[0].Mensagem.ToString();
+
+
+
+                    return new string[] { menssagem, cod };
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return new string[] { "erro", ex.ToString() };
+
+            };
+
+        }
+
 
         public string[] requestCancelaNfseAbrasf(string sdircert, string senhacert, string infosNfse, string sdirxml, string url)
         {
